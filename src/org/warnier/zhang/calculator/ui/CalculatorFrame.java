@@ -84,7 +84,6 @@ public class CalculatorFrame extends JFrame implements ActionListener {
             } else {
                 bundle.putEntry(BundleKey.O, command);
             }
-            bundle.log();
             result = bundle.toString();
         } else if (command.matches(REGEX_NUMBER)) {
             if (bundle.containsKey(BundleKey.O)) {
@@ -92,7 +91,6 @@ public class CalculatorFrame extends JFrame implements ActionListener {
             } else {
                 bundle.putEntry(BundleKey.S, command);
             }
-            bundle.log();
             result = bundle.toString();
         } else {
             result = "Error!";

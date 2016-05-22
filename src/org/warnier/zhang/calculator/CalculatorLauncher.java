@@ -8,7 +8,7 @@ import javax.swing.*;
  * The main launcher for Calculator.
  *
  * @author Warnier-zhang
- * @version 0.1
+ * @version 1.0
  */
 public class CalculatorLauncher {
     public static void main(String[] args) {
