@@ -1,6 +1,7 @@
 package org.warnier.zhang.calculator.ui;
 
 import net.java.dev.designgridlayout.DesignGridLayout;
+import org.warnier.zhang.calculator.model.Bundle;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @author Warnier-zhang
  */
 public class CalculatorFrame extends JFrame implements ActionListener {
-    private Map<String, String> input = new HashMap<>();
+    private Bundle bundle;
     private JTextField textField;
 
     public CalculatorFrame() {
@@ -23,6 +24,8 @@ public class CalculatorFrame extends JFrame implements ActionListener {
 
     public CalculatorFrame(String title) {
         super(title);
+        bundle = new Bundle();
+
         add(makeCalculatorUI());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -55,89 +58,31 @@ public class CalculatorFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         if (command.equals("C")) {
-            textField.setText("");
-            input.clear();
+            bundle.clear();
+            showText("");
         } else if (command.equals("=")) {
-            if (input.containsKey("operator")) {
-                calculate();
-            }
+            showText(bundle.calculate(bundle.get("operator")));
         } else if (command.matches("[\\+\\-×÷]")) {
-            input.put("operator", command);
-            showText();
+            bundle.put("operator", command);
+            showText(bundle.toString());
         } else if (command.matches("[\\.0123456789]")) {
-            if (input.containsKey("operator")) {
-                putArg("end", command);
+            if (bundle.containsKey("operator")) {
+                bundle.put("end", command);
             } else {
-                putArg("start", command);
+                bundle.put("start", command);
             }
-            showText();
+            showText(bundle.toString());
         } else {
             new IllegalArgumentException("NULL Input!");
         }
     }
 
-    private void putArg(String key, String value) {
-        String origin = input.get(key);
-        if (isEmpty(origin)) {
-            input.put(key, value);
-        } else {
-            input.put(key, origin + value);
-        }
-    }
-
-    private void showText() {
-        String text = "";
-        String start = input.get("start");
-        String operator = input.get("operator");
-        String end = input.get("end");
-        if (!isEmpty(start)) {
-            text += start;
-        }
-        if (!isEmpty(operator)) {
-            text += operator;
-        }
-        if (!isEmpty(end)) {
-            text += end;
-        }
-        textField.setText(text);
-    }
-
-    private void calculate() {
-        String operator = input.get("operator");
-        double start = parseText(input.get("start"));
-        double end = parseText(input.get("end"));
-        switch (operator) {
-            case "+":
-                textField.setText(String.valueOf(start + end));
-                break;
-            case "-":
-                textField.setText(String.valueOf(start - end));
-                break;
-            case "×":
-                textField.setText(String.valueOf(start * end));
-                break;
-            case "÷":
-                if (end != 0) {
-                    textField.setText(String.valueOf(start / end));
-                } else {
-                    new IllegalArgumentException("Divisor is Zero!");
-                }
-                break;
-            default:
-                new IllegalArgumentException("Operator is not supported!");
-        }
-        input.clear();
-    }
-
-    private double parseText(String text) {
-        return Double.parseDouble(text);
-    }
-
-    private boolean isEmpty(String text) {
-        return text == null || text.length() == 0;
-    }
-
-    private void makeLog() {
-        System.out.println(input);
+    private void showText(final String text) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                textField.setText(text);
+            }
+        });
     }
 }
