@@ -7,62 +7,72 @@ import java.util.Map;
  * Class for manipulating user input.
  */
 public class Bundle {
-    private Map<String, String> dataWrapper;
+    private Map<String, String> data;
 
     public Bundle() {
-        dataWrapper = new LinkedHashMap<>();
+        data = new LinkedHashMap<>();
     }
 
-    public void put(String key, String value) {
-        if (dataWrapper.containsKey(key)) {
-            dataWrapper.put(key, dataWrapper.get(key) + value);
+    public void putEntry(String key, String value) {
+        if (data.containsKey(key)) {
+            data.put(key, data.get(key) + value);
         } else {
-            dataWrapper.put(key, value);
+            data.put(key, value);
         }
-    }
-
-    public String get(String key) {
-        return dataWrapper.get(key);
     }
 
     public void clear() {
-        dataWrapper.clear();
+        data.clear();
     }
 
     public boolean containsKey(String key) {
-        return dataWrapper.containsKey(key);
+        return data.containsKey(key);
     }
 
-    public String calculate(String operator) {
-        String result = "";
-        switch (operator) {
+    /**
+     * Return itself when entering one operand.
+     * Return NULL and clear operator when there is no operand.
+     * Calculate the result according to operator when there are two operands.
+     */
+    public String calculate() {
+        String s = data.get(BundleKey.S);
+        if (isEmpty(s)) {
+            data.clear();
+            return "";
+        }
+        String e = data.get(BundleKey.E);
+        if (isEmpty(e)) {
+            return s;
+        }
+        return String.valueOf(calculate(Double.parseDouble(s), Double.parseDouble(e)));
+    }
+
+    private double calculate(double s, double e) {
+        double result;
+        switch (data.get(BundleKey.O)) {
             case "+":
-                result = String.valueOf(parseDouble("start") + parseDouble("end"));
+                result = s + e;
                 break;
             case "-":
-                result = String.valueOf(parseDouble("start") - parseDouble("end"));
+                result = s - e;
                 break;
             case "×":
-                result = String.valueOf(parseDouble("start") * parseDouble("end"));
+                result = s * e;
                 break;
             case "÷":
-                result = String.valueOf(parseDouble("start") / parseDouble("end"));
+                result = s / e;
                 break;
             default:
-                new IllegalArgumentException("Operator is not supported!");
+                result = 0;
         }
-        dataWrapper.clear();
+        data.clear();
         return result;
-    }
-
-    private double parseDouble(String key) {
-        return Double.parseDouble(dataWrapper.get(key));
     }
 
     @Override
     public String toString() {
         String text = "";
-        for (Map.Entry<String, String> entry : dataWrapper.entrySet()) {
+        for (Map.Entry<String, String> entry : data.entrySet()) {
             String value = entry.getValue();
             if (isEmpty(value)) {
                 value = "";
@@ -75,6 +85,12 @@ public class Bundle {
             text += value;
         }
         return text;
+    }
+
+    public void log() {
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
     }
 
     private boolean isEmpty(String text) {

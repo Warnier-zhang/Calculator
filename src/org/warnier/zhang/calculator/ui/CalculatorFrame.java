@@ -2,12 +2,11 @@ package org.warnier.zhang.calculator.ui;
 
 import net.java.dev.designgridlayout.DesignGridLayout;
 import org.warnier.zhang.calculator.model.Bundle;
+import org.warnier.zhang.calculator.model.BundleKey;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The UI for Calculator.
@@ -15,6 +14,8 @@ import java.util.Map;
  * @author Warnier-zhang
  */
 public class CalculatorFrame extends JFrame implements ActionListener {
+    private static final String REGEX_OPERATOR = "[\\+\\-×÷]";
+    private static final String REGEX_NUMBER = "[\\.0123456789]";
     private Bundle bundle;
     private JTextField textField;
 
@@ -56,33 +57,30 @@ public class CalculatorFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String command = e.getActionCommand();
-        if (command.equals("C")) {
-            bundle.clear();
-            showText("");
-        } else if (command.equals("=")) {
-            showText(bundle.calculate(bundle.get("operator")));
-        } else if (command.matches("[\\+\\-×÷]")) {
-            bundle.put("operator", command);
-            showText(bundle.toString());
-        } else if (command.matches("[\\.0123456789]")) {
-            if (bundle.containsKey("operator")) {
-                bundle.put("end", command);
-            } else {
-                bundle.put("start", command);
-            }
-            showText(bundle.toString());
-        } else {
-            new IllegalArgumentException("NULL Input!");
-        }
+        textField.setText(doAction(e.getActionCommand()));
     }
 
-    private void showText(final String text) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                textField.setText(text);
+    private String doAction(String command) {
+        String result;
+        if (command.equals("C")) {
+            bundle.clear();
+            result = "";
+        } else if (command.equals("=")) {
+            result = bundle.calculate();
+        } else if (command.matches(REGEX_OPERATOR)) {
+            bundle.putEntry(BundleKey.O, command);
+            result = bundle.toString();
+        } else if (command.matches(REGEX_NUMBER)) {
+            if (bundle.containsKey(BundleKey.O)) {
+                bundle.putEntry(BundleKey.E, command);
+            } else {
+                bundle.putEntry(BundleKey.S, command);
             }
-        });
+            bundle.log();
+            result = bundle.toString();
+        } else {
+            result = "Error!";
+        }
+        return result;
     }
 }
