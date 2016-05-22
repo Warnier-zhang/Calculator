@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
  */
 public class CalculatorFrame extends JFrame implements ActionListener {
     private static final String REGEX_OPERATOR = "[\\+\\-×÷]";
+    private static final String REGEX_PN = "[\\+\\-]";
     private static final String REGEX_NUMBER = "[\\.0123456789]";
     private Bundle bundle;
     private JTextField textField;
@@ -68,7 +69,22 @@ public class CalculatorFrame extends JFrame implements ActionListener {
         } else if (command.equals("=")) {
             result = bundle.calculate();
         } else if (command.matches(REGEX_OPERATOR)) {
-            bundle.putEntry(BundleKey.O, command);
+            if (command.matches(REGEX_PN)) {
+                if (bundle.containsKey(BundleKey.O)) {
+                    if (!bundle.containsKey(BundleKey.E)) {
+                        bundle.putEntry(BundleKey.E, command);
+                    }
+                } else {
+                    if (!bundle.containsKey(BundleKey.S)) {
+                        bundle.putEntry(BundleKey.S, command);
+                    } else {
+                        bundle.putEntry(BundleKey.O, command);
+                    }
+                }
+            } else {
+                bundle.putEntry(BundleKey.O, command);
+            }
+            bundle.log();
             result = bundle.toString();
         } else if (command.matches(REGEX_NUMBER)) {
             if (bundle.containsKey(BundleKey.O)) {

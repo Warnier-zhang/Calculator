@@ -36,13 +36,18 @@ public class Bundle {
      */
     public String calculate() {
         String s = data.get(BundleKey.S);
-        if (isEmpty(s)) {
+        if (isEmpty(s) || s.equals("-") || s.equals("+")) {
             data.clear();
             return "";
         }
         String e = data.get(BundleKey.E);
         if (isEmpty(e)) {
             return s;
+        } else {
+            if (e.equals("-") || e.equals("+")) {
+                data.clear();
+                return "";
+            }
         }
         return String.valueOf(calculate(Double.parseDouble(s), Double.parseDouble(e)));
     }
