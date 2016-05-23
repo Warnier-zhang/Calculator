@@ -61,7 +61,12 @@ public class CalculatorFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        textField.setText(doAction(e.getActionCommand()));
+        String text = doAction(e.getActionCommand());
+        // Modify result for integer arithmetic.
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length() - 2);
+        }
+        textField.setText(text);
     }
 
     private String doAction(String command) {
