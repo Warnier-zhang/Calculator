@@ -44,7 +44,10 @@ public class CalculatorFrame extends JFrame implements ActionListener {
         layout.row().grid().add(makeButton("C"), 2).add(makeButton("÷")).add(makeButton("×"));
         layout.row().grid().add(makeButton("7")).add(makeButton("8")).add(makeButton("9")).add(makeButton("-"));
         layout.row().grid().add(makeButton("4")).add(makeButton("5")).add(makeButton("6")).add(makeButton("+"));
-        layout.row().grid().add(makeButton("1")).add(makeButton("2")).add(makeButton("3")).add(makeButton("="));
+        // Span JButton into two rows.
+        JScrollPane jScrollPane = new JScrollPane(makeButton("="));
+        jScrollPane.setBorder(null);
+        layout.row().grid().add(makeButton("1")).add(makeButton("2")).add(makeButton("3")).add(jScrollPane);
         layout.row().grid().add(makeButton("0"), 2).add(makeButton(".")).spanRow();
         return container;
     }
